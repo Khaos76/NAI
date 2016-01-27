@@ -1,0 +1,10 @@
+*.pdb
+Release/NAI.tlog/unsuccessfulbuild
+*.lastbuildstate
+Release/NAI.tlog/cl.command.1.tlog
+*.log
+*.idb
+NAI.vcxproj
+*.tlog
+Debug/main.obj
+NAI.vcxproj.filters
