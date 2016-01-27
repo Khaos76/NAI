@@ -8,3 +8,6 @@ NAI.vcxproj
 *.tlog
 Debug/main.obj
 NAI.vcxproj.filters
+NAI.vcxproj.user
+x64/Debug/main.obj
+*.enc
