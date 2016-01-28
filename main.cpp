@@ -4,7 +4,7 @@
 
 #include<iostream>
 
-// Potrzebne do komunikacji - serial port
+//--------- Potrzebne do komunikacji - serial port ----------------------//
 #include <Windows.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,10 +16,36 @@ int main() {
 		return(0);																	// and exit program
 	}
 
+////---------------Okno z suwakami ------------------------///
+	cv::namedWindow("Ustawienia koloru", CV_WINDOW_AUTOSIZE);
+
+	int iLowH = 0;
+	int iHighH = 179;
+
+	int iLowS = 0;
+	int iHighS = 255;
+
+	int iLowV = 0;
+	int iHighV = 255;
+
+	static int posX = 0;
+	static int posY = 0;
+	
+	cvCreateTrackbar("LowH", "Ustawienia koloru", &iLowH, 179); //Hue (0 - 179)
+	cvCreateTrackbar("HighH", "Ustawienia koloru", &iHighH, 179);
+
+	cvCreateTrackbar("LowS", "Ustawienia koloru", &iLowS, 255); //Saturation (0 - 255)
+	cvCreateTrackbar("HighS", "Ustawienia koloru", &iHighS, 255);
+
+	cvCreateTrackbar("LowV", "Ustawienia koloru", &iLowV, 255); //Value (0 - 255)
+	cvCreateTrackbar("HighV", "Ustawienia koloru", &iHighV, 255);
+
+////----------------------------------------------------------------///
+	
 	cv::Mat imgOriginal;															// input image
 	cv::Mat imgHSV;
-	cv::Mat imgThreshLow;
-	cv::Mat imgThreshHigh;
+	//cv::Mat imgThreshLow;															// kolor ustawiany na sztywno
+	//cv::Mat imgThreshHigh;
 	cv::Mat imgThresh;
 
 	std::vector<cv::Vec3f> v3fCircles;												// 3 element vector of floats, this will be the pass by reference output of HoughCircles()
@@ -36,15 +62,28 @@ int main() {
 
 		cv::cvtColor(imgOriginal, imgHSV, CV_BGR2HSV);
 
-		cv::inRange(imgHSV, cv::Scalar(0, 155, 155), cv::Scalar(20, 255, 255), imgThreshLow);
-		cv::inRange(imgHSV, cv::Scalar(165, 155, 155), cv::Scalar(179, 255, 255), imgThreshHigh);
+		//----------------- kolor czerwony -----------------------//
 
-		cv::add(imgThreshLow, imgThreshHigh, imgThresh);
+		//cv::inRange(imgHSV, cv::Scalar(0, 155, 155), cv::Scalar(20, 255, 255), imgThreshLow);
+		//cv::inRange(imgHSV, cv::Scalar(165, 155, 155), cv::Scalar(179, 255, 255), imgThreshHigh);
+		//cv::add(imgThreshLow, imgThreshHigh, imgThresh);
 
-		cv::GaussianBlur(imgThresh, imgThresh, cv::Size(3, 3), 0);
+		//------------------kolor z paskow -----------------------//
+	
+		inRange(imgHSV, cv::Scalar(iLowH, iLowS, iLowV), cv::Scalar(iHighH, iHighS, iHighV), imgThresh);
 
-		cv::Mat structuringElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+		//--------------------------------------------------------//
 
+		cv::GaussianBlur(imgThresh, imgThresh, cv::Size(5, 5), 0);
+
+		
+		cv::Mat structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+
+		// usuwanie malych obiektow z tla 
+		cv::erode(imgThresh, imgThresh, structuringElement);
+		cv::dilate(imgThresh, imgThresh, structuringElement);
+
+		// wypelnienie tla
 		cv::dilate(imgThresh, imgThresh, structuringElement);
 		cv::erode(imgThresh, imgThresh, structuringElement);
 
@@ -56,7 +95,7 @@ int main() {
 			imgThresh.rows / 4,					// min distance in pixels between the centers of the detected circles
 			100,								// high threshold of Canny edge detector (called by cvHoughCircles)						
 			50,									// low threshold of Canny edge detector (set at 1/2 previous value)
-			10,									// min circle radius (any circles with smaller radius will not be returned)
+			8,									// min circle radius (any circles with smaller radius will not be returned)
 			400);								// max circle radius (any circles with larger radius will not be returned)
 
 		
