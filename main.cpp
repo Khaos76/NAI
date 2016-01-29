@@ -180,14 +180,14 @@ int main() {
 
 
 		// declare windows
-		namedWindow("Kamera", CV_WINDOW_AUTOSIZE);								// note: you can use CV_WINDOW_NORMAL which allows resizing the window
-		namedWindow("Przetworzony", CV_WINDOW_AUTOSIZE);						// or CV_WINDOW_AUTOSIZE for a fixed size window matching the resolution of the image
-																				// CV_WINDOW_AUTOSIZE is the default
+		namedWindow("Kamera", CV_WINDOW_AUTOSIZE);								
+		namedWindow("Przetworzony", CV_WINDOW_AUTOSIZE);						
+																				
 		// show windows
 		imshow("Kamera", imgOriginal);			
 		imshow("Przetworzony", imgThresh);
 
-		charCheckForEscKey = waitKey(1);									// delay (in ms) and get key press, if any
+		charCheckForEscKey = waitKey(1);									
 	}	// end while
 
 	return(0);
